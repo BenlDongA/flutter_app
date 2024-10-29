@@ -54,8 +54,8 @@ class ProfilePage extends StatelessWidget {
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(
-                      'https://mia.vn/media/uploads/blog-du-lich/phong-canh-dep-o-viet-nam-04-1710678126.jpeg',
+                    image: AssetImage(
+                      'lib/images/bg_profile.jpeg',
                     ),
                     fit: BoxFit.cover,
                   ),
@@ -74,9 +74,7 @@ class ProfilePage extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 40,
-                          backgroundImage: NetworkImage(
-                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTuQXpRQ3NP-MM3iBgnlHvGT69NfZkVISu3A&s', // Thay bằng ảnh thực
-                          ),
+                          backgroundImage: AssetImage('lib/images/avatar.jpeg'),
                         ),
                         SizedBox(width: 16),
                         Column(
@@ -110,20 +108,16 @@ class ProfilePage extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   children: [
                     PhotoCard(
-                      imageUrl:
-                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLVgBhPhKC4L5rJTIMgeYpj3pw0vgxX01-ESexU0pmkp6jDF9Oh0yK0aXjHZKwSEm5uKs&usqp=CAU',
+                      imageUrl: 'lib/images/pr1.jpeg',
                     ),
                     PhotoCard(
-                      imageUrl:
-                          'https://cdnphoto.dantri.com.vn/FzLHioe9pLw0BKfLLsdD0FesiIg=/thumb_w/1020/2024/09/29/mia202charlottefcatint-edited-1727582088824.jpeg',
+                      imageUrl: 'lib/images/pr2.jpg',
                     ),
                     PhotoCard(
-                      imageUrl:
-                          'https://vcdn1-thethao.vnecdn.net/2024/07/16/messi-2-5175-1721087452.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=1f6XbFmAWroF4ZwjXKJvDw',
+                      imageUrl: 'lib/images/pr3.jpg',
                     ),
                     PhotoCard(
-                      imageUrl:
-                          'https://vcdn1-thethao.vnecdn.net/2024/07/16/messi-2-5175-1721087452.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=1f6XbFmAWroF4ZwjXKJvDw',
+                      imageUrl: 'lib/images/pr4.png',
                     ),
                   ],
                 ),
@@ -137,20 +131,16 @@ class ProfilePage extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   children: [
                     SmallPhotoCard(
-                      imageUrl:
-                          'https://vcdn1-thethao.vnecdn.net/2024/07/16/messi-2-5175-1721087452.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=1f6XbFmAWroF4ZwjXKJvDw',
+                      imageUrl: 'lib/images/pr5.jpeg',
                     ),
                     SmallPhotoCard(
-                      imageUrl:
-                          'https://vcdn1-thethao.vnecdn.net/2024/07/16/messi-2-5175-1721087452.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=1f6XbFmAWroF4ZwjXKJvDw',
+                      imageUrl: 'lib/images/pr6.jpg',
                     ),
                     SmallPhotoCard(
-                      imageUrl:
-                          'https://vcdn1-thethao.vnecdn.net/2024/07/16/messi-2-5175-1721087452.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=1f6XbFmAWroF4ZwjXKJvDw',
+                      imageUrl: 'lib/images/pr7.jpeg',
                     ),
                     SmallPhotoCard(
-                      imageUrl:
-                          'https://vcdn1-thethao.vnecdn.net/2024/07/16/messi-2-5175-1721087452.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=1f6XbFmAWroF4ZwjXKJvDw',
+                      imageUrl: 'lib/images/pr8.jpeg',
                     ),
                   ],
                 ),
@@ -163,16 +153,14 @@ class ProfilePage extends StatelessWidget {
                 location: 'Danang, Vietnam',
                 date: 'Jan 20, 2020',
                 likes: 234,
-                imageUrl:
-                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdDKE38mfrt_G_JvigHVDRW19Xq6geQaptwg&s',
+                imageUrl: 'lib/images/pr9.jpg',
               ),
               JourneyCard(
                 title: 'Sapa in spring',
                 location: 'Sapa, Vietnam',
                 date: 'Jan 20, 2020',
                 likes: 234,
-                imageUrl:
-                    'https://dulichchat.com/wp-content/uploads/2019/10/du-lich-sapa-ninh-binh-dulichchat.jpg',
+                imageUrl: 'lib/images/pr10.jpg',
               ),
 
               // Spacer
@@ -216,7 +204,7 @@ class PhotoCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         image: DecorationImage(
-          image: NetworkImage(imageUrl),
+          image: AssetImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),
@@ -237,7 +225,7 @@ class SmallPhotoCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         image: DecorationImage(
-          image: NetworkImage(imageUrl),
+          image: AssetImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),
@@ -267,7 +255,7 @@ class JourneyCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.network(imageUrl, fit: BoxFit.cover),
+          Image.asset(imageUrl, fit: BoxFit.cover), // Sử dụng Image.asset
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(

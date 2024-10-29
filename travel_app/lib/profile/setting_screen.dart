@@ -42,9 +42,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   CircleAvatar(
                     radius: 30, // Kích thước avatar
-                    backgroundImage: NetworkImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTuQXpRQ3NP-MM3iBgnlHvGT69NfZkVISu3A&sg',
-                    ), // Đường dẫn ảnh
+                    backgroundImage:
+                        AssetImage('lib/images/avatar.jpeg'), // Đường dẫn ảnh
                   ),
                   SizedBox(width: 16),
                   Expanded(
@@ -301,9 +300,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundImage: const NetworkImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTuQXpRQ3NP-MM3iBgnlHvGT69NfZkVISu3A&sg',
-                    ),
+                    backgroundImage: AssetImage('lib/images/avatar.jpeg'),
                   ),
                   Positioned(
                     bottom: 0,

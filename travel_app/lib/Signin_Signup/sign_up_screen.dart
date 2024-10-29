@@ -1,3 +1,5 @@
+import 'dart:convert'; // Để xử lý JSON
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'sign_in_screen.dart'; // Import màn hình Sign In
 
@@ -14,10 +16,57 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
 
   String _selectedRole = "Traveler";
+
+  Future<void> _registerUser() async {
+    const String url = 'https://api-flutter-2psk.onrender.com/api/user/create';
+
+    // Tạo trường name từ firstName và lastName
+    String fullName =
+        '${_firstNameController.text} ${_lastNameController.text}';
+
+    // Dữ liệu đăng ký cập nhật với trường name
+    Map<String, dynamic> userData = {
+      'name': fullName,
+      'firstName': _firstNameController.text,
+      'lastName': _lastNameController.text,
+      'country': _countryController.text,
+      'email': _emailController.text,
+      'password': _passwordController.text,
+      'role': _selectedRole,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(userData),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Account created successfully!')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignIn()),
+        );
+      } else {
+        final errorData = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${errorData['message']}')),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: Failed to register')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,22 +211,12 @@ class _SignUpState extends State<SignUp> {
                                 'Please enter your password',
                                 obscureText: true),
                             SizedBox(height: 20),
-                            _buildTextField(
-                                'Confirm Password',
-                                _confirmPasswordController,
-                                'Please confirm your password',
-                                obscureText: true,
-                                matchPassword: _passwordController.text),
-                            SizedBox(height: 30),
 
                             Center(
                               child: ElevatedButton(
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
-                                    // Xử lý đăng ký ở đây
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Signing up...')),
-                                    );
+                                    _registerUser(); // Gọi hàm đăng ký khi hợp lệ
                                   }
                                 },
                                 child: Text('SIGN UP'),
@@ -223,9 +262,7 @@ class _SignUpState extends State<SignUp> {
   // Hàm xây dựng trường nhập liệu
   Widget _buildTextField(
       String label, TextEditingController controller, String errorMsg,
-      {bool obscureText = false,
-      bool emailValidation = false,
-      String? matchPassword}) {
+      {bool obscureText = false, bool emailValidation = false}) {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
@@ -247,9 +284,6 @@ class _SignUpState extends State<SignUp> {
         if (emailValidation &&
             !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
           return 'Please enter a valid email';
-        }
-        if (matchPassword != null && value != matchPassword) {
-          return 'Passwords do not match';
         }
         return null;
       },

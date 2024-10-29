@@ -58,14 +58,14 @@ class HomePage extends StatelessWidget {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        _buildDreamTripCard('Amalfi', 'Italy',
-                            'https://vnpay.vn/s1/statics.vnpay.vn/2023/11/0d79ij9ruoja1698812184967.jpg'),
-                        _buildDreamTripCard('Santorini', 'Greece',
-                            'https://ik.imagekit.io/tvlk/blog/2024/07/canh-dep-viet-nam-7.jpg?tr=dpr-2,w-675'),
-                        _buildDreamTripCard('Bali', 'Indonesia',
-                            'https://vnpay.vn/s1/statics.vnpay.vn/2023/11/0d79ij9ruoja1698812184967.jpg'),
-                        _buildDreamTripCard('Kyoto', 'Japan',
-                            'https://vnpay.vn/s1/statics.vnpay.vn/2023/11/0d79ij9ruoja1698812184967.jpg'),
+                        _buildDreamTripCard(
+                            'Amalfi', 'Italy', 'lib/images/h1.jpg'),
+                        _buildDreamTripCard(
+                            'Santorini', 'Greece', 'lib/images/h2.jpg'),
+                        _buildDreamTripCard(
+                            'Bali', 'Indonesia', 'lib/images/h3.jpg'),
+                        _buildDreamTripCard(
+                            'Kyoto', 'Japan', 'lib/images/h4.jpg'),
                       ],
                     ),
                   ),
@@ -84,14 +84,14 @@ class HomePage extends StatelessWidget {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        _buildPopularTripCard('CaoBang', 'VietNam',
-                            'https://ik.imagekit.io/tvlk/blog/2024/07/canh-dep-viet-nam-7.jpg?tr=dpr-2,w-675'),
-                        _buildPopularTripCard('HoiAn', 'VietNam',
-                            'https://m.yodycdn.com/blog/phong-canh-dep-o-viet-nam-yody-vn-14.jpg'),
-                        _buildPopularTripCard('London', 'UK',
-                            'https://vnpay.vn/s1/statics.vnpay.vn/2023/11/0d79ij9ruoja1698812184967.jpg'),
-                        _buildPopularTripCard('Sydney', 'Australia',
-                            'https://vnpay.vn/s1/statics.vnpay.vn/2023/11/0d79ij9ruoja1698812184967.jpg'),
+                        _buildPopularTripCard(
+                            'CaoBang', 'VietNam', 'lib/images/h5.jpeg'),
+                        _buildPopularTripCard(
+                            'HoiAn', 'VietNam', 'lib/images/h6.jpg'),
+                        _buildPopularTripCard(
+                            'London', 'UK', 'lib/images/h7.jpeg'),
+                        _buildPopularTripCard(
+                            'Sydney', 'Australia', 'lib/images/h8.jpeg'),
                       ],
                     ),
                   ),
@@ -174,7 +174,7 @@ class HomePage extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
-          image: NetworkImage(imagePath),
+          image: AssetImage(imagePath),
           fit: BoxFit.cover,
         ),
       ),
@@ -228,7 +228,7 @@ class HomePage extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
-          image: NetworkImage(imagePath),
+          image: AssetImage(imagePath),
           fit: BoxFit.cover,
         ),
       ),

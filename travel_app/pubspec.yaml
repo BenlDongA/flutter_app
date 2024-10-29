@@ -32,7 +32,9 @@ dependencies:
   flutter:
     sdk: flutter
   image: ^3.0.0
-  lottie: ^2.0.0  # Thêm dòng này để sử dụng GIF
+  lottie: ^2.0.0
+  dio: ^5.0.10
+  http: ^0.13.6
 
 
     
@@ -73,6 +75,7 @@ flutter:
     - lib/images/line.jpg
     - lib/images/logo.png
     - lib/images/bg_profile.jpg
+    - lib/images/bg_profile.jpeg
     - lib/images/person.png
     - lib/images/message.png
     - lib/images/b2.png
@@ -80,6 +83,26 @@ flutter:
     - lib/images/bg_welcome.jpg
     # - lib/images/loading.gif
     - lib/images/loading.json
+    - lib/images/avatar.jpeg
+    - lib/images/pr1.jpeg
+    - lib/images/pr2.jpg
+    - lib/images/pr3.jpg
+    - lib/images/pr4.png
+    - lib/images/pr5.jpeg
+    - lib/images/pr6.jpg
+    - lib/images/pr7.jpeg
+    - lib/images/pr8.jpeg
+    - lib/images/pr9.jpg
+    - lib/images/pr10.jpg
+    - lib/images/h1.jpg
+    - lib/images/h2.jpg
+    - lib/images/h3.jpg
+    - lib/images/h4.jpg
+    - lib/images/h5.jpeg
+    - lib/images/h6.jpg
+    - lib/images/h7.jpeg
+    - lib/images/h8.jpeg
+
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,18 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert'; // Để sử dụng jsonEncode
 import 'sign_up_screen.dart';
 import '../main.dart';
-
-class User {
-  final String email;
-  final String password;
-
-  User({required this.email, required this.password});
-}
-
-List<User> users = [
-  User(email: 'cuong', password: '123'),
-  // Thêm nhiều người dùng nếu cần
-];
 
 class SignIn extends StatelessWidget {
   SignIn({super.key});
@@ -23,29 +13,82 @@ class SignIn extends StatelessWidget {
 
   bool _isEmailValid = true;
   bool _isPasswordValid = true;
-  void _signIn(BuildContext context) {
+
+  // Hàm đăng nhập sử dụng API
+  void _signIn(BuildContext context) async {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    bool isValidUser =
-        users.any((user) => user.email == email && user.password == password);
+    // Kiểm tra xem email và password có rỗng không
+    _isEmailValid = email.isNotEmpty;
+    _isPasswordValid = password.isNotEmpty;
 
-    if (isValidUser) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MainScreen(initialIndex: 2)),
-      );
+    if (_isEmailValid && _isPasswordValid) {
+      try {
+        final response = await http.get(
+          Uri.parse('https://api-flutter-2psk.onrender.com/api/user'),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        );
+
+        // In ra phản hồi từ API để kiểm tra
+
+        if (response.statusCode == 200) {
+          // Parse dữ liệu từ API
+          List<dynamic> users = jsonDecode(response.body);
+
+          // Tìm người dùng có email và password khớp với dữ liệu đã nhập
+          bool userFound = false;
+          for (var user in users) {
+            if (user['email'] == email && user['password'] == password) {
+              userFound = true;
+              break;
+            }
+          }
+
+          if (userFound) {
+            // Đăng nhập thành công
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MainScreen(initialIndex: 2)),
+            );
+          } else {
+            // Đăng nhập không thành công
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Email hoặc mật khẩu không đúng.'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        } else {
+          // Nếu API trả về mã lỗi khác
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Login failed: ${response.statusCode}'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (error) {
+        // Xử lý lỗi khi có sự cố về mạng hoặc khác
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Có lỗi xảy ra: ${error.toString()}'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     } else {
+      // Nếu email hoặc password trống
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Email hoặc mật khẩu không đúng.'),
+          content: Text('Vui lòng nhập email và mật khẩu hợp lệ.'),
           duration: Duration(seconds: 2),
         ),
       );
-
-      _isEmailValid = email.isNotEmpty;
-      _isPasswordValid = password.isNotEmpty;
-      (context as Element).markNeedsBuild(); // Yêu cầu xây dựng lại giao diện
     }
   }
 
@@ -58,8 +101,8 @@ class SignIn extends StatelessWidget {
   }
 
   void _navigateBack(BuildContext context) {
-    // Điều hướng về màn hình Profile
-    Navigator.pop(context); // Quay lại màn hình trước đó
+    // Điều hướng về màn hình trước đó
+    Navigator.pop(context);
   }
 
   @override
@@ -89,8 +132,7 @@ class SignIn extends StatelessWidget {
                           // Nút Back
                           IconButton(
                             icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () => _navigateBack(
-                                context), // Quay về màn hình trước
+                            onPressed: () => _navigateBack(context),
                           ),
                           Container(
                             margin: EdgeInsets.fromLTRB(30, 30, 0, 0),
@@ -165,7 +207,7 @@ class SignIn extends StatelessWidget {
                                   alignment: Alignment.centerRight,
                                   child: TextButton(
                                     onPressed: () {
-                                      // Tạo hành động cho "Forgot Password"
+                                      // Hành động cho "Forgot Password"
                                     },
                                     child: Text('Forgot Password'),
                                   ),
@@ -240,7 +282,7 @@ class SignIn extends StatelessWidget {
   Widget _buildSocialMediaButton(String assetPath) {
     return IconButton(
       onPressed: () {
-        // Thực hiện hành động khi nhấn vào biểu tượng mạng xã hội
+        // Hành động khi nhấn vào biểu tượng mạng xã hội
       },
       icon: Image.asset(
         assetPath,
