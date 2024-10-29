@@ -63,11 +63,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
           children: [
             _buildGuidesSection(),
             Container(
-              alignment: Alignment.centerLeft, // Căn chỉnh sang bên trái
-              padding: const EdgeInsets.only(
-                  left: 16.0,
-                  top: 16.0,
-                  bottom: 8.0), // Thêm padding để tạo khoảng cách
+              alignment: Alignment.centerLeft,
+              padding:
+                  const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 8.0),
               child: Text(
                 "Featured Tours",
                 style: TextStyle(
@@ -83,6 +81,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 futureLocations: futureLocations,
               ),
             ),
+            SizedBox(height: 20), // Padding to avoid overflow
           ],
         ),
       ),
@@ -100,17 +99,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 5),
-          // Sử dụng GridView để hiển thị thẻ
           GridView.count(
-            crossAxisCount: 2, // Số cột là 2
-            childAspectRatio: 0.9, // Tỷ lệ chiều cao và chiều rộng của thẻ
-            physics:
-                NeverScrollableScrollPhysics(), // Ngăn cuộn để có thể cuộn bên ngoài
-            shrinkWrap: true, // Để GridView sử dụng không gian nhỏ hơn
-            padding: EdgeInsets.symmetric(
-                vertical: 8.0), // Khoảng cách dọc giữa các thẻ
-            mainAxisSpacing: 8.0, // Khoảng cách giữa các hàng
-            crossAxisSpacing: 2.0, // Khoảng cách giữa các cột
+            crossAxisCount: 2,
+            childAspectRatio: 0.9,
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            mainAxisSpacing: 8.0,
+            crossAxisSpacing: 2.0,
             children: [
               guideCard("Tuan Tran", "Danang, Vietnam", 127,
                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQb-NGEQDekk2BwsllLjk4tcIM_BPIzXECdsg&s"),
@@ -153,9 +149,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   Widget guideCard(String name, String location, int reviews, String imageUrl) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.49, // 48% width
+      width: MediaQuery.of(context).size.width * 0.49,
       child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 4.0), // Adjust margin
+        margin: const EdgeInsets.symmetric(horizontal: 4.0),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 5,
         child: Column(
@@ -175,7 +171,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   ),
                 ),
                 Positioned(
-                  bottom: 5, // Position the reviews text
+                  bottom: 5,
                   left: 10,
                   child: Row(
                     children: [

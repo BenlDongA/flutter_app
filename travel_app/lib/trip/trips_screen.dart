@@ -135,7 +135,7 @@ Widget _buildNowTrips() {
         children: [
           _buildNowTripCard(
             largeImageUrl:
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTuQXpRQ3NP-MM3iBgnlHvGT69NfZkVISu3A&s',
+                'https://www.montgomerielinks.com/storage/upload/media/da-nang-(2).jpg',
             avatarUrl:
                 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTuQXpRQ3NP-MM3iBgnlHvGT69NfZkVISu3A&s', // Replace with your avatar URL
             title: 'Dragon Bridge Trip',
