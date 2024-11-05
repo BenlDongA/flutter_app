@@ -48,6 +48,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   http: ^0.13.4
+  cached_network_image: ^3.2.3 
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -102,6 +103,8 @@ flutter:
     - lib/images/h6.jpg
     - lib/images/h7.jpeg
     - lib/images/h8.jpeg
+    - uploads/
+
 
     
 

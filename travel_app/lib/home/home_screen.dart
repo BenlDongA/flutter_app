@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'notification_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'trip_model.dart'; // Import the model you created
+import 'notification_screen.dart'; // Import your notification screen
 
 void main() {
   runApp(TravelApp());
@@ -18,12 +21,40 @@ class TravelApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<Trip> trips = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTrips();
+  }
+
+  Future<void> fetchTrips() async {
+    final response = await http
+        .get(Uri.parse('https://api-flutter-2psk.onrender.com/api/home')); // Your API URL
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        trips = data.map((json) => Trip.fromJson(json)).toList();
+      });
+    } else {
+      throw Exception('Failed to load trips');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
+          // Background
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -32,11 +63,12 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
+          // Overlay
           Container(
             color: Colors.black.withOpacity(0.5),
           ),
+          // Content
           SingleChildScrollView(
-            // Thêm SingleChildScrollView ở đây
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -52,24 +84,30 @@ class HomePage extends StatelessWidget {
                   ),
                   SizedBox(height: 30),
                   _buildSearchBar(),
-                  SizedBox(height: 40),
-                  Container(
-                    height: 250,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _buildDreamTripCard(
-                            'Amalfi', 'Italy', 'lib/images/h1.jpg'),
-                        _buildDreamTripCard(
-                            'Santorini', 'Greece', 'lib/images/h2.jpg'),
-                        _buildDreamTripCard(
-                            'Bali', 'Indonesia', 'lib/images/h3.jpg'),
-                        _buildDreamTripCard(
-                            'Kyoto', 'Japan', 'lib/images/h4.jpg'),
-                      ],
+                  SizedBox(height: 20),
+                  Text(
+                    'Dream Trips',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 10),
+                  Container(
+                    height: 250,
+                    child: trips.isNotEmpty
+                        ? ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _buildTripCards('DreamTrip'),
+                          )
+                        : ListView(
+                            scrollDirection: Axis.horizontal,
+                            children:
+                                _buildStaticDreamTrips(), // Ensure it's wrapped in ListView
+                          ),
+                  ),
+                  SizedBox(height: 20),
                   Text(
                     'Popular Trips',
                     style: TextStyle(
@@ -81,24 +119,22 @@ class HomePage extends StatelessWidget {
                   SizedBox(height: 8),
                   Container(
                     height: 200,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _buildPopularTripCard(
-                            'CaoBang', 'VietNam', 'lib/images/h5.jpeg'),
-                        _buildPopularTripCard(
-                            'HoiAn', 'VietNam', 'lib/images/h6.jpg'),
-                        _buildPopularTripCard(
-                            'London', 'UK', 'lib/images/h7.jpeg'),
-                        _buildPopularTripCard(
-                            'Sydney', 'Australia', 'lib/images/h8.jpeg'),
-                      ],
-                    ),
+                    child: trips.isNotEmpty
+                        ? ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: _buildTripCards('PopularTrip'),
+                          )
+                        : ListView(
+                            scrollDirection: Axis.horizontal,
+                            children:
+                                _buildStaticPopularTrips(), // Ensure it's wrapped in ListView
+                          ),
                   ),
                 ],
               ),
             ),
           ),
+          // Notification Button
           Positioned(
             top: 16,
             right: 16,
@@ -107,15 +143,14 @@ class HomePage extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.notifications, color: Colors.white),
                   onPressed: () {
-                    // Chuyển đến màn hình thông báo
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => NotificationsScreen()),
+                        builder: (context) => NotificationsScreen(),
+                      ),
                     );
                   },
                 ),
-                // Số thông báo
                 Positioned(
                   right: 0,
                   child: Container(
@@ -130,7 +165,7 @@ class HomePage extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        '3', // Số thông báo
+                        '3',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -146,6 +181,38 @@ class HomePage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<Widget> _buildTripCards(String typeHome) {
+    return trips.where((trip) => trip.typeHome == typeHome).map((trip) {
+      if (typeHome == 'DreamTrip') {
+        return _buildDreamTripCard(
+            trip.locationName, trip.countryName, trip.imageUrl);
+      } else {
+        return _buildPopularTripCard(
+            trip.locationName, trip.countryName, trip.imageUrl);
+      }
+    }).toList();
+  }
+
+  // Static Dream Trips in case API fails or returns no data
+  List<Widget> _buildStaticDreamTrips() {
+    return [
+      _buildDreamTripCard('Amalfi', 'Italy', 'lib/images/h1.jpg'),
+      _buildDreamTripCard('Santorini', 'Greece', 'lib/images/h2.jpg'),
+      _buildDreamTripCard('Bali', 'Indonesia', 'lib/images/h3.jpg'),
+      _buildDreamTripCard('Kyoto', 'Japan', 'lib/images/h4.jpg'),
+    ];
+  }
+
+  // Static Popular Trips in case API fails or returns no data
+  List<Widget> _buildStaticPopularTrips() {
+    return [
+      _buildPopularTripCard('CaoBang', 'VietNam', 'lib/images/h5.jpeg'),
+      _buildPopularTripCard('HoiAn', 'VietNam', 'lib/images/h6.jpg'),
+      _buildPopularTripCard('London', 'UK', 'lib/images/h7.jpeg'),
+      _buildPopularTripCard('Sydney', 'Australia', 'lib/images/h8.jpeg'),
+    ];
   }
 
   Widget _buildSearchBar() {
@@ -174,7 +241,9 @@ class HomePage extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
-          image: AssetImage(imagePath),
+          image: imagePath.contains('http')
+              ? NetworkImage(imagePath)
+              : AssetImage(imagePath) as ImageProvider,
           fit: BoxFit.cover,
         ),
       ),
@@ -228,7 +297,9 @@ class HomePage extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
-          image: AssetImage(imagePath),
+          image: imagePath.contains('http')
+              ? NetworkImage(imagePath)
+              : AssetImage(imagePath) as ImageProvider,
           fit: BoxFit.cover,
         ),
       ),
