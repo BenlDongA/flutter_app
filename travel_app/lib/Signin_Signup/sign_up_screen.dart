@@ -20,7 +20,7 @@ class _SignUpState extends State<SignUp> {
   String _selectedRole = "Traveler";
 
   Future<void> _registerUser() async {
-    const String url = 'https://api-flutter-2psk.onrender.com/api/user/create';
+    const String url = 'https://api-flutter-nper.onrender.com/api/user/create';
 
     // Tạo trường name từ firstName và lastName
     String fullName =

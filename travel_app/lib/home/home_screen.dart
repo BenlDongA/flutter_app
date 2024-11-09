@@ -36,8 +36,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchTrips() async {
-    final response = await http
-        .get(Uri.parse('https://api-flutter-2psk.onrender.com/api/home')); // Your API URL
+    final response = await http.get(Uri.parse(
+        'https://api-flutter-nper.onrender.com/api/home')); // Your API URL
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);

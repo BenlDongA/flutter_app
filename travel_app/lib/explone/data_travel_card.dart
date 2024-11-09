@@ -34,7 +34,7 @@ class TravelLocation {
 // Fetch travel locations from the API
 Future<List<TravelLocation>> fetchTravelLocations() async {
   final response = await http.get(
-    Uri.parse('https://api-flutter-2psk.onrender.com/api/trip'),
+    Uri.parse('https://api-flutter-nper.onrender.com/api/trip'),
   );
 
   if (response.statusCode == 200) {
