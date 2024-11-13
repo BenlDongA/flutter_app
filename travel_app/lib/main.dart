@@ -43,8 +43,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // Thời gian chờ 3 giây
-    Future.delayed(Duration(seconds: 3), () {
+    // Thời gian chờ 10 giây
+    Future.delayed(Duration(seconds: 7), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => WelcomeScreen()),
@@ -55,13 +55,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255), // Màu nền xanh
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Center(
         child: Lottie.asset(
-          'lib/images/loading.json', // Đường dẫn tới file JSON
-          width: 300, // Kích thước rộng
-          height: 300, // Kích thước cao
-          fit: BoxFit.fill, // Cách hiển thị
+          'lib/images/loading.json',
+          width: 300,
+          height: 300,
+          fit: BoxFit.fill,
         ),
       ),
     );
