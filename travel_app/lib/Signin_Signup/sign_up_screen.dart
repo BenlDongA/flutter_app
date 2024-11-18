@@ -26,12 +26,12 @@ class _SignUpState extends State<SignUp> {
     String fullName =
         '${_firstNameController.text} ${_lastNameController.text}';
 
-    // Dữ liệu đăng ký cập nhật với trường name
+    // Dữ liệu đăng ký, bao gồm countryName
     Map<String, dynamic> userData = {
       'name': fullName,
       'firstName': _firstNameController.text,
       'lastName': _lastNameController.text,
-      'country': _countryController.text,
+      'countryName': _countryController.text, // Đảm bảo gửi countryName
       'email': _emailController.text,
       'password': _passwordController.text,
       'role': _selectedRole,
@@ -43,7 +43,7 @@ class _SignUpState extends State<SignUp> {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: jsonEncode(userData),
+        body: jsonEncode(userData), // Chuyển đổi userData thành JSON
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
