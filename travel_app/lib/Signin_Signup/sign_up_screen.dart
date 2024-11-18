@@ -22,7 +22,6 @@ class _SignUpState extends State<SignUp> {
   Future<void> _registerUser() async {
     const String url = 'https://api-flutter-nper.onrender.com/api/user/';
 
-    // Tạo trường name từ firstName và lastName
     String fullName =
         '${_firstNameController.text} ${_lastNameController.text}';
 
