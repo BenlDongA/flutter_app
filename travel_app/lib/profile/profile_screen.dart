@@ -10,15 +10,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ProfilePage(),
+      home: ProfilePage(
+        userData: {
+          'name': 'John Doe',
+          'email': 'john.doe@example.com',
+          'password':
+              'password', // Mật khẩu mặc định (nên để trống nếu không cần)
+          '_id': 'user_id', // ID người dùng mặc định
+        },
+      ),
     );
   }
 }
 
 class ProfilePage extends StatelessWidget {
+  final Map<String, dynamic>
+      userData; // Thay đổi từ Map<String, String> sang Map<String, dynamic>
+
+  ProfilePage({required this.userData});
+
   @override
   Widget build(BuildContext context) {
-    // Ẩn status bar và navigation bar
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -29,18 +41,18 @@ class ProfilePage extends StatelessWidget {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          automaticallyImplyLeading: false, // Xóa nút Back
-          backgroundColor:
-              const Color.fromARGB(0, 190, 4, 4), // Làm trong suốt AppBar
-          elevation: 0, // Bỏ bóng dưới AppBar
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           actions: [
             IconButton(
               icon: Icon(Icons.settings, color: Colors.white),
               onPressed: () {
-                // Xử lý khi người dùng nhấn vào biểu tượng cài đặt
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                  MaterialPageRoute(
+                    builder: (context) => SettingsPage(userData: userData),
+                  ),
                 );
               },
             ),
@@ -49,27 +61,21 @@ class ProfilePage extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              // Header Profile
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(
-                      'lib/images/bg_profile.jpeg',
-                    ),
+                    image: AssetImage('lib/images/bg_profile.jpeg'),
                     fit: BoxFit.cover,
                   ),
                 ),
                 child: Stack(
                   children: [
-                    // Mờ nền bằng một Container có màu đen trong suốt
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.black
-                            .withOpacity(0.7), // Điều chỉnh độ mờ tại đây
+                        color: Colors.black.withOpacity(0.7),
                       ),
                     ),
-                    // Nội dung trên ảnh
                     Row(
                       children: [
                         CircleAvatar(
@@ -81,7 +87,7 @@ class ProfilePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Cuong Benl',
+                              userData['name'] ?? 'User Name',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -89,7 +95,7 @@ class ProfilePage extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'cuongpy@gmail.com',
+                              userData['email'] ?? 'user@example.com',
                               style: TextStyle(color: Colors.white),
                             ),
                           ],
@@ -99,7 +105,6 @@ class ProfilePage extends StatelessWidget {
                   ],
                 ),
               ),
-
               // My Photos Section
               SectionTitle(title: 'My Photos'),
               Container(
@@ -107,45 +112,26 @@ class ProfilePage extends StatelessWidget {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    PhotoCard(
-                      imageUrl: 'lib/images/pr1.jpeg',
-                    ),
-                    PhotoCard(
-                      imageUrl: 'lib/images/pr2.jpg',
-                    ),
-                    PhotoCard(
-                      imageUrl: 'lib/images/pr3.jpg',
-                    ),
-                    PhotoCard(
-                      imageUrl: 'lib/images/pr4.png',
-                    ),
+                    PhotoCard(imageUrl: 'lib/images/pr1.jpeg'),
+                    PhotoCard(imageUrl: 'lib/images/pr2.jpg'),
+                    PhotoCard(imageUrl: 'lib/images/pr3.jpg'),
+                    PhotoCard(imageUrl: 'lib/images/pr4.png'),
                   ],
                 ),
               ),
-
-              // Thêm danh sách ảnh mới với kích thước khác
-
+              // Thêm danh sách ảnh nhỏ
               Container(
-                height: 100, // Kích thước chiều cao mới
+                height: 100,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    SmallPhotoCard(
-                      imageUrl: 'lib/images/pr5.jpeg',
-                    ),
-                    SmallPhotoCard(
-                      imageUrl: 'lib/images/pr6.jpg',
-                    ),
-                    SmallPhotoCard(
-                      imageUrl: 'lib/images/pr7.jpeg',
-                    ),
-                    SmallPhotoCard(
-                      imageUrl: 'lib/images/pr8.jpeg',
-                    ),
+                    SmallPhotoCard(imageUrl: 'lib/images/pr5.jpeg'),
+                    SmallPhotoCard(imageUrl: 'lib/images/pr6.jpg'),
+                    SmallPhotoCard(imageUrl: 'lib/images/pr7.jpeg'),
+                    SmallPhotoCard(imageUrl: 'lib/images/pr8.jpeg'),
                   ],
                 ),
               ),
-
               // My Journeys Section
               SectionTitle(title: 'My Journeys'),
               JourneyCard(
@@ -162,8 +148,6 @@ class ProfilePage extends StatelessWidget {
                 likes: 234,
                 imageUrl: 'lib/images/pr10.jpg',
               ),
-
-              // Spacer
             ],
           ),
         ),
@@ -212,7 +196,6 @@ class PhotoCard extends StatelessWidget {
   }
 }
 
-// Tạo một lớp mới cho các ảnh nhỏ
 class SmallPhotoCard extends StatelessWidget {
   final String imageUrl;
   const SmallPhotoCard({required this.imageUrl});
@@ -221,7 +204,7 @@ class SmallPhotoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(4),
-      width: 150, // Kích thước nhỏ hơn
+      width: 150,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         image: DecorationImage(
@@ -255,7 +238,7 @@ class JourneyCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(imageUrl, fit: BoxFit.cover), // Sử dụng Image.asset
+          Image.asset(imageUrl, fit: BoxFit.cover),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(

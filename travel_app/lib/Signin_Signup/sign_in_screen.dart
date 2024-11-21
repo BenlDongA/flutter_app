@@ -11,84 +11,55 @@ class SignIn extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool _isEmailValid = true;
-  bool _isPasswordValid = true;
-
   // Hàm đăng nhập sử dụng API
   void _signIn(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    // Kiểm tra xem email và password có rỗng không
-    _isEmailValid = email.isNotEmpty;
-    _isPasswordValid = password.isNotEmpty;
+    try {
+      final response = await http.get(
+        Uri.parse('https://api-flutter-nper.onrender.com/api/user'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
 
-    if (_isEmailValid && _isPasswordValid) {
-      try {
-        final response = await http.get(
-          Uri.parse('https://api-flutter-nper.onrender.com/api/user'),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
+      if (response.statusCode == 200) {
+        List<dynamic> users = jsonDecode(response.body);
 
-        // In ra phản hồi từ API để kiểm tra
+        // Tìm người dùng
+        var user = users.firstWhere(
+            (user) => user['email'] == email && user['password'] == password,
+            orElse: () => null);
 
-        if (response.statusCode == 200) {
-          // Parse dữ liệu từ API
-          List<dynamic> users = jsonDecode(response.body);
-
-          // Tìm người dùng có email và password khớp với dữ liệu đã nhập
-          bool userFound = false;
-          for (var user in users) {
-            if (user['email'] == email && user['password'] == password) {
-              userFound = true;
-              break;
-            }
-          }
-
-          if (userFound) {
-            // Đăng nhập thành công
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MainScreen(initialIndex: 2)),
-            );
-          } else {
-            // Đăng nhập không thành công
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Email hoặc mật khẩu không đúng.'),
-                duration: Duration(seconds: 2),
+        if (user != null) {
+          // Đăng nhập thành công, điều hướng và truyền dữ liệu người dùng
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MainScreen(
+                initialIndex: 2,
+                userData: {
+                  'name': user['name'],
+                  'email': user['email'],
+                  'password': user['password'],
+                  '_id': user['_id'],
+                },
               ),
-            );
-          }
-        } else {
-          // Nếu API trả về mã lỗi khác
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Login failed: ${response.statusCode}'),
-              duration: Duration(seconds: 2),
             ),
           );
+        } else {
+          _showErrorDialog(context, 'Email hoặc mật khẩu không đúng.');
         }
-      } catch (error) {
-        // Xử lý lỗi khi có sự cố về mạng hoặc khác
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Có lỗi xảy ra: ${error.toString()}'),
-            duration: Duration(seconds: 2),
-          ),
-        );
+      } else {
+        _showErrorDialog(context, 'Login failed: ${response.statusCode}');
       }
-    } else {
-      // Nếu email hoặc password trống
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Vui lòng nhập email và mật khẩu hợp lệ.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+    } catch (error) {
+      _showErrorDialog(context, 'Có lỗi xảy ra: ${error.toString()}');
     }
   }
 
@@ -103,6 +74,22 @@ class SignIn extends StatelessWidget {
   void _navigateBack(BuildContext context) {
     // Điều hướng về màn hình trước đó
     Navigator.pop(context);
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -166,75 +153,98 @@ class SignIn extends StatelessWidget {
                         borderRadius:
                             BorderRadius.all(Radius.elliptical(250, 50)),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding:
-                                EdgeInsets.only(left: 30, right: 30, top: 30),
-                            child: Text(
-                              'Sign in',
-                              style: TextStyle(
-                                  fontSize: 30, fontWeight: FontWeight.bold),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding:
+                                  EdgeInsets.only(left: 30, right: 30, top: 30),
+                              child: Text(
+                                'Sign in',
+                                style: TextStyle(
+                                    fontSize: 30, fontWeight: FontWeight.bold),
+                              ),
                             ),
-                          ),
-                          const Padding(
-                            padding:
-                                EdgeInsets.only(left: 30, right: 30, top: 10),
-                            child: Text(
-                              'Welcome back, Yoo Jin',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey),
+                            const Padding(
+                              padding:
+                                  EdgeInsets.only(left: 30, right: 30, top: 10),
+                              child: Text(
+                                'Welcome back, Yoo Jin',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 30),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Column(
-                              children: [
-                                _buildTextField(
-                                    'Email', _emailController, !_isEmailValid),
-                                SizedBox(height: 20),
-                                _buildTextField('Password', _passwordController,
-                                    !_isPasswordValid,
-                                    obscureText: true),
-                                SizedBox(height: 10),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: () {
-                                      // Hành động cho "Forgot Password"
+                            SizedBox(height: 30),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Column(
+                                children: [
+                                  _buildTextFormField(
+                                    'Email',
+                                    _emailController,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your email.';
+                                      }
+                                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                          .hasMatch(value)) {
+                                        return 'Please enter a valid email address.';
+                                      }
+                                      return null;
                                     },
-                                    child: Text('Forgot Password'),
                                   ),
-                                ),
-                                SizedBox(height: 20),
-                                ElevatedButton(
-                                  onPressed: () => _signIn(context),
-                                  child: Text('SIGN IN'),
-                                  style: ElevatedButton.styleFrom(
-                                    minimumSize: Size(double.infinity, 50),
-                                    backgroundColor: Color(0xFF00CEA6),
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
+                                  SizedBox(height: 20),
+                                  _buildTextFormField(
+                                    'Password',
+                                    _passwordController,
+                                    obscureText: true,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your password.';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SizedBox(height: 10),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: TextButton(
+                                      onPressed: () {
+                                        // Hành động cho "Forgot Password"
+                                      },
+                                      child: Text('Forgot Password'),
                                     ),
                                   ),
-                                ),
-                                SizedBox(height: 20),
-                                Text('or sign in with'),
-                                SizedBox(height: 10),
-                                _buildSocialMediaButtons(),
-                                SizedBox(height: 20),
-                                _buildSignUpLink(context),
-                              ],
+                                  SizedBox(height: 20),
+                                  ElevatedButton(
+                                    onPressed: () => _signIn(context),
+                                    child: Text('SIGN IN'),
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: Size(double.infinity, 50),
+                                      backgroundColor: Color(0xFF00CEA6),
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 20),
+                                  Text('or sign in with'),
+                                  SizedBox(height: 10),
+                                  _buildSocialMediaButtons(),
+                                  SizedBox(height: 20),
+                                  _buildSignUpLink(context),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -247,10 +257,9 @@ class SignIn extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(
-      String label, TextEditingController controller, bool hasError,
-      {bool obscureText = false}) {
-    return TextField(
+  Widget _buildTextFormField(String label, TextEditingController controller,
+      {bool obscureText = false, String? Function(String?)? validator}) {
+    return TextFormField(
       controller: controller,
       obscureText: obscureText,
       decoration: InputDecoration(
@@ -263,8 +272,8 @@ class SignIn extends StatelessWidget {
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.green, width: 2.0),
         ),
-        errorText: hasError ? 'This field cannot be empty' : null,
       ),
+      validator: validator,
     );
   }
 

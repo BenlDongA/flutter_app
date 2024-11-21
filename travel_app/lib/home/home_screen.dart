@@ -101,11 +101,7 @@ class _HomePageState extends State<HomePage> {
                             scrollDirection: Axis.horizontal,
                             children: _buildTripCards('DreamTrip'),
                           )
-                        : ListView(
-                            scrollDirection: Axis.horizontal,
-                            children:
-                                _buildStaticDreamTrips(), // Ensure it's wrapped in ListView
-                          ),
+                        : Center(child: CircularProgressIndicator()),
                   ),
                   SizedBox(height: 20),
                   Text(
@@ -124,11 +120,7 @@ class _HomePageState extends State<HomePage> {
                             scrollDirection: Axis.horizontal,
                             children: _buildTripCards('PopularTrip'),
                           )
-                        : ListView(
-                            scrollDirection: Axis.horizontal,
-                            children:
-                                _buildStaticPopularTrips(), // Ensure it's wrapped in ListView
-                          ),
+                        : Center(child: CircularProgressIndicator()),
                   ),
                 ],
               ),
@@ -193,26 +185,6 @@ class _HomePageState extends State<HomePage> {
             trip.locationName, trip.countryName, trip.imageUrl);
       }
     }).toList();
-  }
-
-  // Static Dream Trips in case API fails or returns no data
-  List<Widget> _buildStaticDreamTrips() {
-    return [
-      _buildDreamTripCard('Amalfi', 'Italy', 'lib/images/h1.jpg'),
-      _buildDreamTripCard('Santorini', 'Greece', 'lib/images/h2.jpg'),
-      _buildDreamTripCard('Bali', 'Indonesia', 'lib/images/h3.jpg'),
-      _buildDreamTripCard('Kyoto', 'Japan', 'lib/images/h4.jpg'),
-    ];
-  }
-
-  // Static Popular Trips in case API fails or returns no data
-  List<Widget> _buildStaticPopularTrips() {
-    return [
-      _buildPopularTripCard('CaoBang', 'VietNam', 'lib/images/h5.jpeg'),
-      _buildPopularTripCard('HoiAn', 'VietNam', 'lib/images/h6.jpg'),
-      _buildPopularTripCard('London', 'UK', 'lib/images/h7.jpeg'),
-      _buildPopularTripCard('Sydney', 'Australia', 'lib/images/h8.jpeg'),
-    ];
   }
 
   Widget _buildSearchBar() {

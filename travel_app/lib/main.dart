@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lottie/lottie.dart'; // Import cho việc quản lý giao diện hệ thống
+import 'package:lottie/lottie.dart';
 import 'explone/explore_screen.dart';
 import 'home/home_screen.dart';
 import 'profile/profile_screen.dart';
 import 'mess/messages_screen.dart';
 import 'trip/trips_screen.dart';
-import 'Signin_Signup/sign_in_screen.dart';
-import 'Signin_Signup/sign_up_screen.dart';
+import 'Signin_Signup/sign_in_sign_up_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -43,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // Thời gian chờ 10 giây
+    // Thời gian chờ 7 giây
     Future.delayed(Duration(seconds: 7), () {
       Navigator.pushReplacement(
         context,
@@ -74,24 +73,21 @@ class WelcomeScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
+          // Hình nền
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image:
-                    AssetImage('lib/images/bg_welcome.jpg'), // Background image
+                image: AssetImage('lib/images/bg_welcome.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          // Overlay content
+          // Nội dung overlay
           Column(
             children: [
-              const SizedBox(height: 50), // Space from the top
+              const SizedBox(height: 50),
               const Padding(
-                padding: EdgeInsets.only(
-                    left: 16.0,
-                    top: 20), // Adjust this for horizontal/vertical spacing
+                padding: EdgeInsets.only(left: 16.0, top: 20),
                 child: Text(
                   'LIFE IS SHORT\nAND THE WORLD IS WIDE',
                   style: TextStyle(
@@ -106,20 +102,18 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  textAlign: TextAlign.left, // Align text to the left
+                  textAlign: TextAlign.left,
                 ),
               ),
-              const Spacer(), // Pushes the button to the bottom
+              const Spacer(),
               Padding(
-                padding: const EdgeInsets.only(
-                    bottom: 20.0), // Space from the bottom edge
+                padding: const EdgeInsets.only(bottom: 20.0),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            SignInSignUpScreen(), // Chuyển đến màn hình Sign In/Sign Up
+                        builder: (context) => SignInSignUpScreen(),
                       ),
                     );
                   },
@@ -127,17 +121,15 @@ class WelcomeScreen extends StatelessWidget {
                     'Get Started',
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.black, // Text color
-                      fontWeight: FontWeight.bold, // Bold text
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white, // Button background color
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15), // Button padding
+                    backgroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(30), // Rounded corners
+                      borderRadius: BorderRadius.circular(30),
                     ),
                   ),
                 ),
@@ -150,67 +142,15 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
-class SignInSignUpScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-                'lib/images/bg_profile.jpg'), // Đường dẫn tới hình nền
-            fit: BoxFit.cover, // Đặt hình nền vừa với kích thước container
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  // Chuyển đến màn hình đăng nhập từ file signin_screen.dart
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignIn()),
-                  );
-                },
-                child: Text('Sign In'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20), // Khoảng cách giữa hai nút
-              ElevatedButton(
-                onPressed: () {
-                  // Chuyển đến màn hình đăng ký
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUp()),
-                  );
-                },
-                child: Text('Sign Up'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class MainScreen extends StatefulWidget {
   final int initialIndex;
+  final Map<String, dynamic> userData; // Thêm dòng này
 
-  MainScreen({Key? key, this.initialIndex = 0}) : super(key: key);
+  MainScreen(
+      {Key? key,
+      this.initialIndex = 0,
+      required this.userData}) // Cập nhật constructor
+      : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -219,13 +159,21 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    ExploreScreen(),
-    TripsScreen(),
-    HomePage(),
-    MessagesScreen(),
-    ProfilePage(),
-  ];
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  List<Widget> _widgetOptions() {
+    return [
+      ExploreScreen(),
+      TripsScreen(),
+      HomePage(),
+      MessagesScreen(),
+      ProfilePage(userData: widget.userData), // Truyền userData vào ProfilePage
+    ];
+  }
 
   @override
   void initState() {
@@ -233,17 +181,11 @@ class _MainScreenState extends State<MainScreen> {
     _selectedIndex = widget.initialIndex;
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: _widgetOptions()[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

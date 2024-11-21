@@ -61,7 +61,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildGuidesSection(),
             Container(
               alignment: Alignment.centerLeft,
               padding:
@@ -84,41 +83,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
             SizedBox(height: 20), // Padding to avoid overflow
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildGuidesSection() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Guides in Danang",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 5),
-          GridView.count(
-            crossAxisCount: 2,
-            childAspectRatio: 0.9,
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            mainAxisSpacing: 8.0,
-            crossAxisSpacing: 2.0,
-            children: [
-              guideCard("Tuan Tran", "Danang, Vietnam", 127,
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Cristiano_Ronaldo_playing_for_Al_Nassr_FC_against_Persepolis%2C_September_2023_%28cropped%29.jpg/800px-Cristiano_Ronaldo_playing_for_Al_Nassr_FC_against_Persepolis%2C_September_2023_%28cropped%29.jpg"),
-              guideCard("Emmy", "Hanoi, Vietnam", 98,
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQb-NGEQDekk2BwsllLjk4tcIM_BPIzXECdsg&s"),
-              guideCard("Linh Hana", "Danang, Vietnam", 127,
-                  "https://tmssl.akamaized.net//images/foto/galerie/ronaldo-cristiano-2017-real-madrid-ballon-d-or-2016-0026751808hjpg-1698686328-120749.jpg?lm=1698686338"),
-              guideCard("Khai Ho", "Ho Chi Minh, Vietnam", 127,
-                  "https://media.tinthethao.com.vn/files/bongda/2024/05/26/r1188646_1296x729_16-9jpg.jpg"),
-            ],
-          ),
-        ],
       ),
     );
   }

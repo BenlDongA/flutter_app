@@ -1,7 +1,8 @@
-import 'dart:convert'; // Để xử lý JSON
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'sign_in_screen.dart'; // Import màn hình Sign In
+import 'package:dropdown_search/dropdown_search.dart';
+import 'sign_in_screen.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -13,11 +14,50 @@ class _SignUpState extends State<SignUp> {
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   String _selectedRole = "Traveler";
+  String? _selectedCountry;
+  List<String> _countries = [];
+  bool _isLoadingCountries = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCountries();
+  }
+
+  Future<void> _fetchCountries() async {
+    setState(() {
+      _isLoadingCountries = true;
+    });
+    try {
+      final response =
+          await http.get(Uri.parse('https://restcountries.com/v3.1/all'));
+      if (response.statusCode == 200) {
+        final List<dynamic> countryData = jsonDecode(response.body);
+        setState(() {
+          _countries = countryData
+              .map((country) => country['name']['common'].toString())
+              .toList();
+          _countries.sort();
+          _isLoadingCountries = false;
+        });
+      } else {
+        throw Exception('Failed to load countries');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingCountries = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load countries: $e')),
+      );
+    }
+  }
 
   Future<void> _registerUser() async {
     const String url = 'https://api-flutter-nper.onrender.com/api/user/';
@@ -25,12 +65,11 @@ class _SignUpState extends State<SignUp> {
     String fullName =
         '${_firstNameController.text} ${_lastNameController.text}';
 
-    // Dữ liệu đăng ký, bao gồm countryName
     Map<String, dynamic> userData = {
       'name': fullName,
       'firstName': _firstNameController.text,
       'lastName': _lastNameController.text,
-      'countryName': _countryController.text, // Đảm bảo gửi countryName
+      'countryName': _selectedCountry,
       'email': _emailController.text,
       'password': _passwordController.text,
       'role': _selectedRole,
@@ -42,13 +81,10 @@ class _SignUpState extends State<SignUp> {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: jsonEncode(userData), // Chuyển đổi userData thành JSON
+        body: jsonEncode(userData),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Account created successfully!')),
-        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignIn()),
@@ -56,13 +92,13 @@ class _SignUpState extends State<SignUp> {
       } else {
         final errorData = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${errorData['message']}')),
+          SnackBar(
+              content: Text(errorData['message'] ?? 'Failed to register.')),
         );
       }
     } catch (e) {
-      print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: Failed to register')),
+        SnackBar(content: Text('Failed to register. Please try again.')),
       );
     }
   }
@@ -70,13 +106,13 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false, // Ngăn chặn quay lại
+      onWillPop: () async => false,
       child: Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
             child: Stack(
               children: [
-                // Khung màu xanh
+                // Background xanh
                 Container(
                   color: Color.fromARGB(250, 0, 206, 166),
                   width: double.infinity,
@@ -85,11 +121,10 @@ class _SignUpState extends State<SignUp> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Nút Back
                       IconButton(
                         icon: Icon(Icons.arrow_back, color: Colors.white),
                         onPressed: () {
-                          Navigator.pop(context); // Quay về màn hình trước
+                          Navigator.pop(context);
                         },
                       ),
                       Container(
@@ -149,7 +184,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 30),
 
-                            // Nút radio cho Traveler và Guide
+                            // Radio cho Traveler và Guide
                             Row(
                               children: [
                                 Expanded(
@@ -180,42 +215,117 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 20),
 
-                            // Row cho First Name và Last Name
                             Row(
                               children: [
                                 Expanded(
                                   child: _buildTextField(
-                                      'First Name',
-                                      _firstNameController,
-                                      'Please enter your first name'),
+                                    'First Name',
+                                    _firstNameController,
+                                    (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your first name';
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                 ),
                                 SizedBox(width: 20),
                                 Expanded(
                                   child: _buildTextField(
-                                      'Last Name',
-                                      _lastNameController,
-                                      'Please enter your last name'),
+                                    'Last Name',
+                                    _lastNameController,
+                                    (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your last name';
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
                             SizedBox(height: 20),
-                            _buildTextField('Country', _countryController,
-                                'Please enter your country'),
+
+                            // DropdownSearch quốc gia
+                            DropdownSearch<String>(
+                              items: _countries,
+                              selectedItem: _selectedCountry,
+                              dropdownDecoratorProps: DropDownDecoratorProps(
+                                dropdownSearchDecoration: InputDecoration(
+                                  labelText: 'Country',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              popupProps: PopupProps.menu(
+                                showSearchBox: true,
+                                searchFieldProps: TextFieldProps(
+                                  decoration: InputDecoration(
+                                    hintText: 'Search country...',
+                                  ),
+                                ),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedCountry = value;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select your country';
+                                }
+                                return null;
+                              },
+                            ),
                             SizedBox(height: 20),
-                            _buildTextField('Email', _emailController,
-                                'Please enter your email',
-                                emailValidation: true),
+
+                            _buildTextField(
+                              'Email',
+                              _emailController,
+                              (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your email';
+                                }
+                                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                    .hasMatch(value)) {
+                                  return 'Please enter a valid email';
+                                }
+                                return null;
+                              },
+                            ),
                             SizedBox(height: 20),
-                            _buildTextField('Password', _passwordController,
-                                'Please enter your password',
-                                obscureText: true),
+                            _buildTextField(
+                              'Password',
+                              _passwordController,
+                              (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your password';
+                                }
+                                return null;
+                              },
+                              obscureText: true,
+                            ),
+                            SizedBox(height: 20),
+                            _buildTextField(
+                              'Confirm Password',
+                              _confirmPasswordController,
+                              (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please confirm your password';
+                                }
+                                if (value != _passwordController.text) {
+                                  return 'Passwords do not match';
+                                }
+                                return null;
+                              },
+                              obscureText: true,
+                            ),
                             SizedBox(height: 20),
 
                             Center(
                               child: ElevatedButton(
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
-                                    _registerUser(); // Gọi hàm đăng ký khi hợp lệ
+                                    _registerUser();
                                   }
                                 },
                                 child: Text('SIGN UP'),
@@ -234,7 +344,6 @@ class _SignUpState extends State<SignUp> {
                             Center(
                               child: TextButton(
                                 onPressed: () {
-                                  // Sử dụng Navigator.push để chuyển sang màn hình Sign In
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -258,34 +367,20 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  // Hàm xây dựng trường nhập liệu
   Widget _buildTextField(
-      String label, TextEditingController controller, String errorMsg,
-      {bool obscureText = false, bool emailValidation = false}) {
+    String label,
+    TextEditingController controller,
+    String? Function(String?) validator, {
+    bool obscureText = false,
+  }) {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.grey),
-        border: UnderlineInputBorder(),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.green, width: 2.0),
-        ),
+        border: OutlineInputBorder(),
       ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return errorMsg;
-        }
-        if (emailValidation &&
-            !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-          return 'Please enter a valid email';
-        }
-        return null;
-      },
+      validator: validator,
     );
   }
 }

@@ -1,49 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:app_travel/Signin_Signup/sign_in_sign_up_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SettingsPage extends StatefulWidget {
+  final Map<String, dynamic> userData; // Thay đổi kiểu dữ liệu
+
+  SettingsPage({required this.userData});
+
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool _notificationsEnabled =
-      true; // Biến để lưu trạng thái của nút chuyển đổi
+  bool _notificationsEnabled = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 60, // Đặt chiều cao của AppBar
+        toolbarHeight: 60,
         leading: IconButton(
-          icon: Icon(Icons.close), // Biểu tượng "X"
+          icon: Icon(Icons.close),
           onPressed: () {
-            Navigator.of(context).pop(); // Đóng trang hiện tại
+            Navigator.of(context).pop();
           },
         ),
         title: Text(
           'Settings',
           style: TextStyle(
-            fontFamily: 'SF Pro Display', // Font yêu cầu
-            fontWeight: FontWeight.w600, // Định dạng chữ
-            fontSize: 17, // Kích thước chữ
-            height: 1.29, // Chiều cao dòng (line height)
+            fontWeight: FontWeight.w600,
+            fontSize: 17,
           ),
         ),
-        centerTitle: true, // Căn giữa tiêu đề
+        centerTitle: true,
       ),
       body: SafeArea(
         child: ListView(
           children: <Widget>[
             Container(
-              color:
-                  Color.fromRGBO(0, 206, 166, 1.0), // Màu nền giống trong hình
+              color: Color.fromRGBO(0, 206, 166, 1.0),
               padding: EdgeInsets.all(16),
               child: Row(
                 children: [
                   CircleAvatar(
-                    radius: 30, // Kích thước avatar
-                    backgroundImage:
-                        AssetImage('lib/images/avatar.jpeg'), // Đường dẫn ảnh
+                    radius: 30,
+                    backgroundImage: AssetImage('lib/images/avatar.jpeg'),
                   ),
                   SizedBox(width: 16),
                   Expanded(
@@ -51,9 +53,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Cuong Benl',
+                          widget.userData['name'] ?? 'User Name',
                           style: TextStyle(
-                            color: Colors.white, // Màu chữ trắng
+                            color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -61,7 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Text(
                           'Traveler',
                           style: TextStyle(
-                            color: Colors.white70, // Màu chữ phụ
+                            color: Colors.white70,
                             fontSize: 14,
                           ),
                         ),
@@ -70,16 +72,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      _navigateToEditProfile(
-                          context); // Gọi hàm điều hướng khi nhấn nút "EDIT PROFILE"
+                      _navigateToEditProfile(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, // Màu chữ
-                      backgroundColor:
-                          Color.fromRGBO(0, 206, 166, 1.0), // Nền xanh lá
+                      foregroundColor: Colors.white,
+                      backgroundColor: Color.fromRGBO(0, 206, 166, 1.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(color: Colors.white), // Viền trắng
+                        side: BorderSide(color: Colors.white),
                       ),
                     ),
                     child: Text('EDIT PROFILE'),
@@ -87,54 +87,22 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            Divider(
-              thickness: 1, // Độ dày của đường phân cách
-              height: 1, // Giảm chiều cao để không tạo khoảng trống lớn
-              color: const Color.fromARGB(255, 219, 218, 218),
-            ), // Divider dưới mục đầu tiên
-
-            // Mục Notifications với Switch
+            Divider(height: 1, color: Color.fromARGB(255, 219, 218, 218)),
             ListTile(
-              leading: Container(
-                padding:
-                    EdgeInsets.all(8), // Padding để tạo khoảng cách cho viền
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  // Viền đen
-                ),
-                child: Icon(Icons.notifications_none,
-                    color:
-                        const Color.fromARGB(255, 52, 51, 51)), // Icon màu đen
-              ),
-              title: Text(
-                'Notifications',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display', // Font yêu cầu
-                  fontWeight: FontWeight.w400, // Độ dày chữ 400
-                  fontSize: 16, // Kích thước chữ
-                  color: const Color.fromARGB(255, 52, 51, 51), // Màu chữ đen
-                ),
-              ),
+              leading: Icon(Icons.notifications_none,
+                  color: Color.fromARGB(255, 52, 51, 51)),
+              title: Text('Notifications'),
               trailing: Switch(
-                value: _notificationsEnabled, // Giá trị của Switch
+                value: _notificationsEnabled,
                 onChanged: (value) {
                   setState(() {
-                    _notificationsEnabled = value; // Cập nhật trạng thái
+                    _notificationsEnabled = value;
                   });
                 },
-                activeColor: Color.fromRGBO(
-                    0, 206, 166, 1.0), // Màu khi Switch đang ở trạng thái "on"
+                activeColor: Color.fromRGBO(0, 206, 166, 1.0),
               ),
-              onTap: () {
-                // Xử lý sự kiện nhấn vào mục Notifications nếu cần
-              },
             ),
-
-            Divider(
-              thickness: 1,
-              height: 1,
-              color: const Color.fromARGB(255, 200, 200, 200),
-            ),
+            Divider(height: 1, color: Color.fromARGB(255, 200, 200, 200)),
             _buildListTile(
               icon: Icons.language,
               title: 'Languages',
@@ -142,11 +110,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 // Xử lý sự kiện nhấn "Languages"
               },
             ),
-            Divider(
-              thickness: 1,
-              height: 1,
-              color: const Color.fromARGB(255, 200, 200, 200),
-            ),
+            Divider(height: 1, color: Color.fromARGB(255, 200, 200, 200)),
             _buildListTile(
               icon: Icons.payment,
               title: 'Payment',
@@ -154,11 +118,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 // Xử lý sự kiện nhấn "Payment"
               },
             ),
-            Divider(
-              thickness: 1,
-              height: 1,
-              color: const Color.fromARGB(255, 200, 200, 200),
-            ),
+            Divider(height: 1, color: Color.fromARGB(255, 200, 200, 200)),
             _buildListTile(
               icon: Icons.lock,
               title: 'Privacy & Policies',
@@ -166,11 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 // Xử lý sự kiện nhấn "Privacy & Policies"
               },
             ),
-            Divider(
-              thickness: 1,
-              height: 1,
-              color: const Color.fromARGB(255, 200, 200, 200),
-            ),
+            Divider(height: 1, color: Color.fromARGB(255, 200, 200, 200)),
             _buildListTile(
               icon: Icons.feedback,
               title: 'Feedback',
@@ -178,11 +134,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 // Xử lý sự kiện nhấn "Feedback"
               },
             ),
-            Divider(
-              thickness: 1,
-              height: 1,
-              color: const Color.fromARGB(255, 200, 200, 200),
-            ),
+            Divider(height: 1, color: Color.fromARGB(255, 200, 200, 200)),
             _buildListTile(
               icon: Icons.list,
               title: 'Usage',
@@ -190,104 +142,95 @@ class _SettingsPageState extends State<SettingsPage> {
                 // Xử lý sự kiện nhấn "Usage"
               },
             ),
-            Divider(
-              thickness: 1,
-              height: 1,
-              color: const Color.fromARGB(255, 200, 200, 200),
-            ),
+            Divider(height: 1, color: Color.fromARGB(255, 200, 200, 200)),
             _buildListTile(
               icon: Icons.exit_to_app,
               title: 'Sign out',
               onTap: () {
-                // Xử lý sự kiện nhấn "Sign out"
+                _signOut(context);
               },
             ),
-            Divider(
-              thickness: 1,
-              height: 1,
-              color: const Color.fromARGB(255, 200, 200, 200),
-            ), // Divider cuối cùng
+            Divider(height: 1, color: Color.fromARGB(255, 200, 200, 200)),
           ],
         ),
       ),
     );
   }
 
-  // Hàm điều hướng đến trang EditProfilePage
-  void _navigateToEditProfile(BuildContext context) {
-    Navigator.push(
+  void _navigateToEditProfile(BuildContext context) async {
+    final updatedUserData = await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              EditProfilePage()), // Điều hướng đến EditProfilePage
+        builder: (context) => EditProfilePage(userData: widget.userData),
+      ),
     );
+
+    // Nếu có dữ liệu mới, cập nhật userData
+    if (updatedUserData != null) {
+      setState(() {
+        widget.userData['name'] = updatedUserData['name'];
+        // Cập nhật thêm các trường khác nếu cần
+      });
+    }
   }
 
-  // Hàm tái sử dụng để tạo ListTile
   Widget _buildListTile({
     required IconData icon,
     required String title,
     required VoidCallback onTap,
   }) {
     return ListTile(
-      leading: Container(
-        padding: EdgeInsets.all(8), // Padding để tạo khoảng cách cho viền
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          // Viền đen
-        ),
-        child: Icon(icon,
-            color: const Color.fromARGB(255, 52, 51, 51)), // Icon màu đen
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontFamily: 'SF Pro Display', // Font yêu cầu
-          fontWeight: FontWeight.w400, // Độ dày chữ 400
-          fontSize: 16, // Kích thước chữ
-          color: const Color.fromARGB(255, 52, 51, 51), // Màu chữ đen
-        ),
-      ),
-      trailing: Icon(
-        Icons.chevron_right,
-        color: const Color.fromARGB(255, 200, 200, 200), // Icon ">" màu nhạt
-      ), // Icon ">" bên phải
-      onTap: onTap, // Thêm sự kiện khi nhấn vào ListTile
+      leading: Icon(icon, color: Color.fromARGB(255, 52, 51, 51)),
+      title: Text(title),
+      trailing:
+          Icon(Icons.chevron_right, color: Color.fromARGB(255, 200, 200, 200)),
+      onTap: onTap,
+    );
+  }
+
+  void _signOut(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => SignInSignUpScreen()),
+      (route) => false,
     );
   }
 }
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({Key? key}) : super(key: key);
+  final Map<String, dynamic> userData; // Thay đổi kiểu dữ liệu
+
+  const EditProfilePage({Key? key, required this.userData}) : super(key: key);
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text = widget.userData['name'] ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Edit Profile',
-          style: TextStyle(color: Colors.black),
-        ),
+        title:
+            const Text('Edit Profile', style: TextStyle(color: Colors.black)),
         actions: [
           TextButton(
-            onPressed: () {
-              // Handle saving profile changes
-            },
-            child: const Text(
-              'SAVE',
-              style: TextStyle(color: Colors.teal),
-            ),
+            onPressed: _saveProfile,
+            child: const Text('SAVE', style: TextStyle(color: Colors.teal)),
           )
         ],
       ),
@@ -312,7 +255,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       child: IconButton(
                         onPressed: () {
-                          // Handle changing profile picture
+                          // Xử lý thay đổi hình ảnh đại diện
                         },
                         icon: const Icon(Icons.camera_alt, color: Colors.white),
                         padding: const EdgeInsets.all(8.0),
@@ -324,39 +267,78 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             const SizedBox(height: 32.0),
             TextFormField(
-              initialValue: 'Cuong',
-              decoration: const InputDecoration(
-                labelText: 'First Name',
-              ),
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'First Name'),
             ),
             const SizedBox(height: 16.0),
             TextFormField(
-              initialValue: 'Benl',
-              decoration: const InputDecoration(
-                labelText: 'Last Name',
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            TextFormField(
+              controller: _oldPasswordController,
               obscureText: true,
-              initialValue: '........', // Giá trị mặc định
-              decoration: const InputDecoration(
-                labelText: 'Password',
-              ),
+              decoration: const InputDecoration(labelText: 'Current Password'),
             ),
             const SizedBox(height: 16.0),
-            TextButton(
-              onPressed: () {
-                // Handle changing password
-              },
-              child: const Text(
-                'Change Password',
-                style: TextStyle(color: Colors.teal),
-              ),
+            TextFormField(
+              controller: _newPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'New Password'),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _saveProfile() async {
+    final newName = _nameController.text.trim();
+    final oldPassword = _oldPasswordController.text.trim();
+    final newPassword = _newPasswordController.text.trim();
+
+    // Kiểm tra mật khẩu cũ
+    if (oldPassword.isEmpty) {
+      _showError('Please enter your current password.');
+      return;
+    }
+
+    if (oldPassword != widget.userData['password']) {
+      _showError('Current password is incorrect.');
+      return;
+    }
+
+    // Gửi yêu cầu đến API để cập nhật thông tin
+    try {
+      final response = await http.put(
+        Uri.parse(
+            'https://api-flutter-nper.onrender.com/api/user/${widget.userData['_id']}'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'email': widget.userData['email'],
+          'name': newName,
+          'password': newPassword.isNotEmpty ? newPassword : oldPassword,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Cập nhật thành công, lấy dữ liệu mới từ API
+        final updatedUserData = json.decode(response.body);
+        updatedUserData['password'] = newPassword.isNotEmpty
+            ? newPassword
+            : oldPassword; // Thêm mật khẩu mới
+        Navigator.of(context).pop(updatedUserData); // Trả về dữ liệu mới
+      } else {
+        final errorMessage =
+            json.decode(response.body)['message'] ?? 'Error updating profile';
+        _showError(errorMessage);
+      }
+    } catch (e) {
+      _showError('An error occurred. Please try again.');
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 }
